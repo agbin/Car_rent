@@ -119,8 +119,15 @@ class TripModelTest(TestCase):
         trip.car.add(self.test_car, second_car)
         trip.save()
 
+        Car.objects.filter(pk=second_car.id).update(model="SECOND CAR")
+        # second_car.save()
+
         trip = Trip.objects.prefetch_related('car').filter(id=trip.id).first()
         self.assertEqual(trip.car.count(), 2)
+
+        second_car.delete()
+        trip.refresh_from_db()
+        self.assertEqual(trip.car.count(), 1)
 
         # Trip.objects.create(
         #     lender=self.test_lender.id,
