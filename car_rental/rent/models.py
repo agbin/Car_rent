@@ -1,18 +1,21 @@
 from django.db import models
 from datetime import datetime
-
-
+from django.core.exceptions import ValidationError
+from rent.validators import validate_model_name
 
 
 class Car(models.Model):
-    model = models.CharField(max_length=20)
+    model = models.CharField(
+        max_length=20,
+        validators=[validate_model_name],
+        null=False,
+    )
     color = models.CharField(max_length=20, blank=True)
     engine_identifier = models.CharField(max_length=20)
-    price_for_a_day = models.IntegerField()
+    price_for_a_day = models.PositiveIntegerField()
 
     def __str__(self):
         return self.model
-
 
 
 class Lender(models.Model):
@@ -42,8 +45,6 @@ class Trip(models.Model):
     @property
     def to_pay(self):
         return self.how_many_days * self.price_for_one_day
-
-
 
     def __str__(self):
         return self.client_name
